@@ -8,14 +8,18 @@ browser.get('https://play2048.co/')
 
 htmlElem = browser.find_element_by_tag_name('html')
 
-scoreElem = browser.find_element_by_class_name('score-container')
-score = scoreElem.text
 
 gameoverElem = browser.find_element_by_css_selector('.game-message > p:nth-child(1)').is_displayed()
 retryElem = browser.find_elements_by_class_name('restart-button')
 
-while score != '2048':
-    rand_key = random.randrange(1,4) 
+highscore = 0
+
+outFile = open('scores.txt','w', buffering=1)
+
+while True:
+    scoreElem = browser.find_element_by_class_name('score-container')
+    score = scoreElem.text
+    rand_key = random.randrange(1,5) 
     if gameoverElem == False:
         if rand_key == 1:
             htmlElem.send_keys(Keys.UP)
@@ -28,6 +32,10 @@ while score != '2048':
         gameoverElem = browser.find_element_by_css_selector('.game-message > p:nth-child(1)').is_displayed()
         time.sleep(0.3)
     else:
+        if int(score) > highscore:
+            highscore = int(score)
+        outFile.write(str(highscore) + '\n')
         retryElem[0].click()
         gameoverElem = False
+outFile.close()
 print("WE WON!")
